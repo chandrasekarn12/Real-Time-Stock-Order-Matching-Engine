@@ -14,6 +14,7 @@ struct Order {
     uint64_t id; //unique order ID, use 64-bit unsigned to prevent overflow
     OrderType type;
     Side side;
+    std::string ticker;
     double price; //only used for LIMIT orders
     uint32_t quantity; //Only 32-bits needed, can be lowered if necessary
     std::chrono::high_resolution_clock::time_point timestamp;
