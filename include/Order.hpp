@@ -12,15 +12,15 @@ enum class Side {BUY, SELL};
 
 struct Order {
     uint64_t id; //unique order ID, use 64-bit unsigned to prevent overflow
+    std::string ticker;
     OrderType type;
     Side side;
-    std::string ticker;
     double price; //only used for LIMIT orders
     uint32_t quantity; //Only 32-bits needed, can be lowered if necessary
     std::chrono::high_resolution_clock::time_point timestamp;
 
-    Order(uint64_t id, OrderType type, Side side, double price, uint32_t quantity)
-        : id(id), type(type), side(side), price(price), quantity(quantity), 
+    Order(uint64_t id, std::string ticker, OrderType type, Side side, double price, uint32_t quantity)
+        : ticker(ticker), id(id), type(type), side(side), price(price), quantity(quantity), 
           timestamp(std::chrono::high_resolution_clock::now()) {}
     
     std::string toString() const {
