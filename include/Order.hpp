@@ -23,7 +23,7 @@ struct Order {
         : ticker(ticker), id(id), type(type), side(side), price(price), quantity(quantity), 
           timestamp(std::chrono::high_resolution_clock::now()) {}
     
-    std::string toString() const {
+    std::string to_string() const {
         std::ostringstream oss;
         oss << "Order [ID: " << id 
             << "; Type: " << (type == OrderType::LIMIT ? "LIMIT" : "MARKET")

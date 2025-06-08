@@ -1,5 +1,5 @@
-#include "Order.hpp"
-#include "MessageQueue.hpp"
+#include "../include/Order.hpp"
+#include "../include/MessageQueue.hpp"
 
 #include <random>
 #include <string>
@@ -8,30 +8,31 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <atomic>
 
 void generate_orders(MessageQueue<Order>& queue, 
                      std::atomic<bool>& running,
                      int generator_id,
                      const std::vector<std::string>& tickers,
-                     const std::map<std::string, double>& curr_prices,
+                     std::map<std::string, double>& curr_prices,
                      std::mutex& price_mutex) {
 
     std::default_random_engine engine(std::random_device{}());
     // Have market price drift between -5% and +5% of the current price
-    std::uniform_int_distribution<double> drift_dist(-0.05, 0.05);
-    // Randomly select a ticker from the list
-    std::uniform_int_distribution<int> ticker_dist(0, tickers.size() - 1);
+    std::uniform_real_distribution<double> drift_dist(-0.05, 0.05);
+    // Randomly select a ticker from the list (ensure tickers is not empty)
+    std::uniform_int_distribution<int> ticker_dist(0, tickers.empty() ? 0 : static_cast<int>(tickers.size()) - 1);
      // 0 for LIMIT, 1 for MARKET
     std::uniform_int_distribution<int> type_dist(0, 1);
     // 0 for BUY, 1 for SELL
     std::uniform_int_distribution<int> side_dist(0, 1);
-    // Quantity between 1 and 100
+    // Quantity between 1 and 100s
     std::uniform_int_distribution<int> quantity_dist(1, 100);
     // Spread for limit orders between -0.3 and +0.3 of the current price
     std::uniform_real_distribution<double> spread_dist(-0.3, 0.3);
     
     // Local id derivated from generator id for tracking
-    uint64_t local_id = generator_id * 1'000'000'000;
+    uint64_t local_id = generator_id * 1'000'000;
     
     while(running) {
         std::string ticker = tickers[ticker_dist(engine)];
